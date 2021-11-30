@@ -8,12 +8,7 @@ const StyledSvg = styled.svg`
     stroke-width: 0.5px;
 
     g {
-        /* transition: all 0.2s ease-in-out;
-        &:hover {
-            fill: yellow;
-        } */
         path {
-            /* fill: white; */
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             &:hover {
