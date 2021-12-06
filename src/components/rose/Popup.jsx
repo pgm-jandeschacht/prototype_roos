@@ -108,7 +108,7 @@ const Popup = ({ name, open, onClose }) => {
             <Container>
                 <Title>{name}</Title>
                 
-                {/* checkbox or Button */}
+                {/* Radio or Button*/}
                 <Flex>
                     <MoodSelector moodColor={"green"}><FontAwesomeIcon icon={faSmile}/></MoodSelector>
 
