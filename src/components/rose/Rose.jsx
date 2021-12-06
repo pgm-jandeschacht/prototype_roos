@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import Popup from './Popup';
 
 const StyledSvg = styled.svg`
     fill: #fff;
@@ -16,7 +17,7 @@ const StyledSvg = styled.svg`
             }
             
             &#${props => props.pathId}{
-                fill: black;
+                fill: green;
             }
         }
     }
@@ -25,12 +26,20 @@ const StyledSvg = styled.svg`
 const Rose = () => {
     const [category, setCategory] = useState(undefined);
     const [dataId, setDataId] = useState(undefined);
+    const [popup, setPopup] = useState(false);
 
     const handleClicking = (e) => {
         const data = e.target.dataset.name ;
-        const cat = data?.split(' - ')
-        setCategory(cat[2])
+        const cat = data?.split(' - ');
+        (cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(e.target.id);
+        setPopup(true);
+    }
+
+    const handleClosing = (close) => {
+        if (!close) {
+            setPopup(false)
+        }
     }
 
     return (
@@ -93,6 +102,8 @@ const Rose = () => {
             </StyledSvg>
 
             <p>{category}</p>
+
+            <Popup name={category} open={popup} onClose={handleClosing}/>
         </div>
     )
 }
