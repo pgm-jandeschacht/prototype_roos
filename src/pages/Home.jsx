@@ -5,7 +5,7 @@ import { Rose } from '../components/rose'
 const Home = () => {
     return (
         <BaseLayout>
-           <Rose/> 
+           <Rose/>
         </BaseLayout>
     )
 }

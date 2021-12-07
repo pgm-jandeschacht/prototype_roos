@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import Popup from './Popup';
 
 const StyledSvg = styled.svg`
     fill: #fff;
@@ -8,32 +9,42 @@ const StyledSvg = styled.svg`
     stroke-width: 0.5px;
 
     g {
-        /* transition: all 0.2s ease-in-out;
-        &:hover {
-            fill: yellow;
-        } */
         path {
-            /* fill: white; */
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             &:hover {
                 fill: red;
+            }
+            
+            &#${props => props.pathId}{
+                fill: green;
             }
         }
     }
 `
 
 const Rose = () => {
+    const [category, setCategory] = useState(undefined);
+    const [dataId, setDataId] = useState(undefined);
+    const [popup, setPopup] = useState(false);
 
     const handleClicking = (e) => {
         const data = e.target.dataset.name ;
-        const test = data.split(' - ')
-        console.log(test[2])
+        const cat = data?.split(' - ');
+        (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
+        setDataId(e.target.id);
+        setPopup(true);
+    }
+
+    const handleClosing = (close) => {
+        if (!close) {
+            setPopup(false)
+        }
     }
 
     return (
         <div>
-            <StyledSvg onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
+            <StyledSvg pathId={dataId} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
                 <g id="Schijf_1_-_Kind" data-name="Schijf 1 - Kind">
                     <path id="Schijf_1_-_Kind_-_Cognitieve_functie" data-name="Schijf 1 - Kind - Cognitieve functie" class="cls-1"
                     d="M290.46,310.06l-8.2,14.21a30.74,30.74,0,0,1-15.36-26.63h16.38A14.32,14.32,0,0,0,290.46,310.06Z"
@@ -89,6 +100,10 @@ const Rose = () => {
                     transform="translate(-234.72 -234.72)" />
                 </g>
             </StyledSvg>
+
+            <p>{category}</p>
+
+            <Popup name={category} open={popup} onClose={handleClosing}/>
         </div>
     )
 }
