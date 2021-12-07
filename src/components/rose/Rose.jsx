@@ -31,7 +31,7 @@ const Rose = () => {
     const handleClicking = (e) => {
         const data = e.target.dataset.name ;
         const cat = data?.split(' - ');
-        (cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
+        (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(e.target.id);
         setPopup(true);
     }
