@@ -5,13 +5,12 @@ import { faMeh, faSmile, faFrown, faTimesCircle } from '@fortawesome/free-regula
 
 const StyledPopup = styled.div`
     position: fixed;
-    background: #00000040;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     transition: all 0.2s ease-in-out;
-    visibility: ${props => props.visibility ? 'visible' : 'hidden'};
+    visibility: ${props => props.isVisible ? 'visible' : 'hidden'};
 `
 
 const Title = styled.p`
@@ -52,6 +51,7 @@ const Close = styled.button`
 `
 
 const Container = styled.div`
+    z-index: 2;
     position: absolute;
     background: #fff;
     width: 15rem;
@@ -59,6 +59,7 @@ const Container = styled.div`
     padding: 1.5rem;
     right: 2rem;
     bottom: 2rem;
+    box-shadow: 0 1px 4px #00000020;
 `
 
 const Flex = styled.div`
@@ -79,10 +80,12 @@ const MoodSelector = styled.button`
     cursor: pointer;
     background: none;
     border: none;
+    display: flex;
     svg {
         transition: all 0.2s ease-in-out;
         width: 2.5rem!important;
         height: 100%;
+        color: ${props => (props.moodColor === props.buttonColor && props.buttonColor !== undefined ? props.buttonColor : 'black')};
     }
 
     &:hover {
@@ -92,10 +95,22 @@ const MoodSelector = styled.button`
     }
 `
 
+const StyledBackground = styled.div`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    background: #00000040;
+`
+
 const Popup = ({ name, open, onClose }) => {
     const [close, setClose] = useState(true);
+    const [buttons, setButtons] = useState({ 'id': '' })
     const handleClosing = () => {
         setClose(false);
+        setButtons({'id': ''})
     }
 
     useEffect(() => {
@@ -103,23 +118,26 @@ const Popup = ({ name, open, onClose }) => {
         setClose(true);
     }, [onClose, close]);
 
+    const handleMood = (e) => {
+        setButtons({'id': (e.target.id || e.target.parentNode.id)})
+    }
     return (
-        <StyledPopup visibility={open}>
+        <StyledPopup isVisible={open}>
             <Container>
                 <Title>{name}</Title>
                 
-                {/* Radio or Button*/}
                 <Flex>
-                    <MoodSelector moodColor={"green"}><FontAwesomeIcon icon={faSmile}/></MoodSelector>
+                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
 
-                    <MoodSelector moodColor={"orange"}><FontAwesomeIcon icon={faMeh}/></MoodSelector>
+                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
 
-                    <MoodSelector moodColor={"red"}><FontAwesomeIcon icon={faFrown}/></MoodSelector>
+                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
                 </Flex>
 
                 <Close onClick={handleClosing}><FontAwesomeIcon icon={faTimesCircle}/></Close>
             </Container>
 
+            <StyledBackground onClick={handleClosing}></StyledBackground>
         </StyledPopup>
     )
 }
