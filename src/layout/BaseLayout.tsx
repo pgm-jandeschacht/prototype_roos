@@ -1,6 +1,10 @@
 import React from 'react'
 
-const BaseLayout = ({ children }) => {
+interface BaseLayoutProps {
+    children: React.ReactNode
+}
+
+const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
     return (
         <>
             <header></header>
@@ -8,8 +12,8 @@ const BaseLayout = ({ children }) => {
             <main>
                 {children}
             </main>
-            
-            <footer></footer>
+
+            <footer></footer>   
         </>
     )
 }

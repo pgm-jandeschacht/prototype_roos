@@ -3,14 +3,24 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMeh, faSmile, faFrown, faTimesCircle } from '@fortawesome/free-regular-svg-icons'
 
-const StyledPopup = styled.div`
+interface PopupProps {
+    name: string,
+    open: boolean,
+    onClose: (close: boolean) => void
+}
+
+interface StyledPopupProps {
+    isVisible: boolean
+}
+
+const StyledPopup = styled.div<StyledPopupProps>`
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     transition: all 0.2s ease-in-out;
-    visibility: ${props => props.isVisible ? 'visible' : 'hidden'};
+    visibility: ${(StyledPopupProps) => StyledPopupProps.isVisible ? 'visible' : 'hidden'};
 `
 
 const Title = styled.p`
@@ -75,7 +85,12 @@ const Flex = styled.div`
     }
 `
 
-const MoodSelector = styled.button`
+interface MoodSelectorProps {
+    moodColor: string,
+    buttonColor: string
+}
+
+const MoodSelector = styled.button<MoodSelectorProps>`
     padding: 0;
     cursor: pointer;
     background: none;
@@ -85,12 +100,12 @@ const MoodSelector = styled.button`
         transition: all 0.2s ease-in-out;
         width: 2.5rem!important;
         height: 100%;
-        color: ${props => (props.moodColor === props.buttonColor && props.buttonColor !== undefined ? props.buttonColor : 'black')};
+        color: ${(MoodSelectorProps) => (MoodSelectorProps.moodColor === MoodSelectorProps.buttonColor && MoodSelectorProps.buttonColor !== undefined ? MoodSelectorProps.buttonColor : 'black')};
     }
 
     &:hover {
         svg {
-            color: ${props => props.moodColor}
+            color: ${(MoodSelectorProps) => MoodSelectorProps.moodColor}
         }
     }
 `
@@ -105,9 +120,10 @@ const StyledBackground = styled.div`
     background: #00000040;
 `
 
-const Popup = ({ name, open, onClose }) => {
+const Popup: React.FC<PopupProps> = ({ name, open, onClose }) => {
     const [close, setClose] = useState(true);
     const [buttons, setButtons] = useState({ 'id': '' })
+
     const handleClosing = () => {
         setClose(false);
         setButtons({'id': ''})
@@ -118,27 +134,30 @@ const Popup = ({ name, open, onClose }) => {
         setClose(true);
     }, [onClose, close]);
 
-    const handleMood = (e) => {
-        setButtons({'id': (e.target.id || e.target.parentNode.id)})
+    const handleMood = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const event: any = e.target;
+        setButtons({'id': (event.id || event.parentNode.id)})
     }
+
     return (
         <StyledPopup isVisible={open}>
-            <Container>
-                <Title>{name}</Title>
-                
-                <Flex>
-                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
+        <Container>
+            <Title>{name}</Title>
+            
+            <Flex>
+                <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
 
-                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
+                <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
 
-                    <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
-                </Flex>
+                <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
+            </Flex>
 
-                <Close onClick={handleClosing}><FontAwesomeIcon icon={faTimesCircle}/></Close>
-            </Container>
+            <Close onClick={handleClosing}><FontAwesomeIcon icon={faTimesCircle}/></Close>
+        </Container>
 
-            <StyledBackground onClick={handleClosing}></StyledBackground>
-        </StyledPopup>
+        <StyledBackground onClick={handleClosing}></StyledBackground>
+    </StyledPopup>
+
     )
 }
 
