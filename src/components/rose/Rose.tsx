@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import Popup from './Popup'
 
 interface StyledSvgProps {
     pathId: string
@@ -31,14 +32,19 @@ const Rose: React.FC = () => {
     const [dataId, setDataId] = useState('');
     const [popup, setPopup] = useState(false);
 
-    const handleClicking = (e: React.MouseEvent<SVGSVGElement>) => {
+    const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
-        const cat = data?.dataset.name.split(' - ');
+        const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
         (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(data.id);
         setPopup(true);
     }
 
+    const handleClosing = (close: boolean) => {
+        if (!close) {
+            setPopup(false)
+        }
+    }
 
     return (
         <div>
@@ -101,6 +107,7 @@ const Rose: React.FC = () => {
 
             <p>{category}</p>
 
+            <Popup name={category} open={popup} onClose={handleClosing} />
         </div>
     )
 }
