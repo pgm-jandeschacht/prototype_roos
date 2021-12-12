@@ -1,11 +1,11 @@
 import React from 'react'
-import { BaseLayout } from '../layout'
 import { Rose } from '../components/rose'
+import { BaseLayout } from '../layout'
 
-const Home = () => {
+const Home: React.FC = () => {
     return (
         <BaseLayout>
-           <Rose/>
+            <Rose/>
         </BaseLayout>
     )
 }
