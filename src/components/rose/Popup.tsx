@@ -158,11 +158,20 @@ const StyledList = styled.ul<StyledListProps>`
 
     li {
         cursor: pointer;
-        padding-bottom: 1.5rem;
         padding-left: 1.5rem;
         position: relative;
         transition: all 0.2s ease-in-out;
-        color: #777a7c;
+        
+        button {
+            padding-bottom: 1.5rem;
+            transition: all 0.2s ease-in-out;
+            color: #777a7c;
+            font-size: 1rem;
+
+            &:hover {
+                color: #001429;
+            }
+        }
 
         &:before {
             background: #001429;
@@ -194,9 +203,11 @@ const StyledList = styled.ul<StyledListProps>`
         }
 
         &#${(StyledListProps) => StyledListProps.groupId} {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #001429;
+            button {
+                font-weight: bold;
+                font-size: 1.2rem;
+                color: #001429;
+            }
             
             &:after {
                 left: -0.1875rem;
@@ -204,10 +215,6 @@ const StyledList = styled.ul<StyledListProps>`
                 height: 1rem;
                 background: #3799FB;
             }
-        }
-        
-        &:hover {
-            color: #001429;
         }
     }
 `
@@ -243,6 +250,9 @@ const StyledBackground = styled.div`
 const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }) => {
     const [close, setClose] = useState(true);
     const [buttons, setButtons] = useState({ 'id': '' });
+    const [activeState, setActiveState] = useState('');
+    const [title, setTitle] = useState('');
+    // const [subCatsList, setSubCatsList] = useState(null);
 
     const handleClosing = () => {
         setClose(false);
@@ -252,18 +262,27 @@ const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }
     useEffect(() => {
         onClose(close);
         setClose(true);
-    }, [onClose, close]);
+        setActiveState(active.id)
+        setTitle(active.dataset === undefined || active.dataset.name === undefined ? '' : active.dataset.name.split(' - '));
+        // setSubCatsList(active.childNodes !== undefined ? [...active.childNodes] : undefined);
+    }, [onClose, close, active.dataset, active.id, active.childNodes]);
     
     const handleMood = (e: React.MouseEvent<HTMLButtonElement>) => {
         const event: any = e.target;
         setButtons({'id': (event.id || event.parentNode.id)})
     }
 
+    const handleClicking = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const data: any = e.target;
+        console.log(data);
+        console.log(subCatsList)
+        setActiveState(data.dataset.name);
+        setTitle(data.innerText.split(' - '));
+    }
+
     const catsList = categories !== null ? [...categories.childNodes] : undefined;
 
     const subCatsList = active.childNodes !== undefined ? [...active.childNodes] : undefined;
-
-    const title = active.dataset === undefined || active.dataset.name === undefined ? '' : active.dataset.name.split(' - ');
 
     return (
         
@@ -287,8 +306,8 @@ const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }
                     <SubCats>
                         {
                             subCatsList === undefined ? '' :
-                            subCatsList.map(subCat => (
-                                <li>
+                            subCatsList.map((subCat: any, index: number) => (
+                                <li key={index}>
                                     <p>
                                         {subCat.dataset.name.split(' - ')[2]}
                                     </p>
@@ -318,12 +337,14 @@ const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }
                 </StyledBox>
                 
                 <StyledSideNav>
-                    <StyledList groupId={active.id}>
+                    <StyledList groupId={activeState}>
                         {
                             catsList === undefined ? '' :
                             catsList.map((cat: any, index: number) => (
                                 <li id={cat.id} key={index}>
-                                    {cat.dataset.name}
+                                    <button data-name={cat.id} onClick={handleClicking}>
+                                        {cat.dataset.name}
+                                    </button>
                                 </li>
                             ))
                         }
