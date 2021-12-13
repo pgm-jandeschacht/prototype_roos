@@ -1,16 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import Popup from './Popup'
 
+
+const StyledDiv = styled.div`
+    position: relative;
+`
+
 interface StyledSvgProps {
-    pathId: string
+    pathId: string,
+    open: boolean
 }
 
 const StyledSvg = styled.svg<StyledSvgProps>`
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    margin: 1rem;
+    margin-left: ${(StyledSvgProps) => StyledSvgProps.open ? '3rem' : '0'};
     fill: #fff;
     stroke: #000;
     stroke-miterlimit: 10;
     stroke-width: 0.5px;
+    width: 60%;
+    /* max-height: 90vh; */
+    left: ${(StyledSvgProps) => StyledSvgProps.open ? '10%' : '50%'};
+    transform: ${(StyledSvgProps) => StyledSvgProps.open ? 'translateX(-10%)' : 'translateX(-50%)'};
 
     g {
         path {
@@ -31,24 +45,35 @@ const Rose: React.FC = () => {
     const [category, setCategory] = useState('');
     const [dataId, setDataId] = useState('');
     const [popup, setPopup] = useState(false);
+    const [cats, setCats] = useState(null);
+    const [groupId, setGroupId] = useState('');
 
     const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
         const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
         (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(data.id);
+        
+        setGroupId(data.parentNode);
+
         setPopup(true);
     }
-
+    
     const handleClosing = (close: boolean) => {
         if (!close) {
             setPopup(false)
         }
     }
 
+    useEffect(() => {
+        setCats(rose.current);
+    }, [])
+    
+    const rose = useRef(null);
+
     return (
-        <div>
-            <StyledSvg pathId={dataId} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
+        <StyledDiv>
+            <StyledSvg ref={rose} pathId={dataId} open={popup} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
                 <g id="Schijf_1_-_Kind" data-name="Schijf 1 - Kind">
                     <path id="Schijf_1_-_Kind_-_Cognitieve_functie" data-name="Schijf 1 - Kind - Cognitieve functie" className="cls-1"
                     d="M290.46,310.06l-8.2,14.21a30.74,30.74,0,0,1-15.36-26.63h16.38A14.32,14.32,0,0,0,290.46,310.06Z"
@@ -105,10 +130,10 @@ const Rose: React.FC = () => {
                 </g>
             </StyledSvg>
 
-            <p>{category}</p>
+            {/* <p>{category}</p> */}
 
-            <Popup name={category} open={popup} onClose={handleClosing} />
-        </div>
+            <Popup name={category} open={popup} onClose={handleClosing} categories={cats} active={groupId}/>
+        </StyledDiv>
     )
 }
 
