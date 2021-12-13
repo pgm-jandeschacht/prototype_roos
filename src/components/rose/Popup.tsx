@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMeh, faSmile, faFrown } from '@fortawesome/free-regular-svg-icons'
+import { faMale, faFemale } from '@fortawesome/free-solid-svg-icons'
 
 interface PopupProps {
     name: string,
@@ -24,6 +25,8 @@ const StyledPopup = styled.div<StyledPopupProps>`
     transition: all 0.3s ease-in-out;
     border-radius: 30px;
     overflow: hidden;
+    max-width: 64rem;
+    margin: auto;
 `
 
 const Container = styled.div`
@@ -38,21 +41,77 @@ const StyledBox = styled.div`
 
 const Title = styled.p`
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: bold;
     margin: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+
+    span {
+        font-size: 1.25rem;
+        font-weight: normal;
+    }
 `
 
-const Flex = styled.div`
+const Parents = styled.ul`
     display: flex;
-    align-items: center;
-    justify-content: center;
-    button {
-        margin-right: 1rem;
+    justify-content: space-between;
+    margin: 0 6rem;
+    margin-bottom: 1.5rem;
+
+    li {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        svg {
+            height: 2.5rem!important;
+            width: auto!important;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
+`
+
+const SubCats = styled.ul`
+    overflow-y: auto;
+    height: calc(100% - 4rem - 2rem - 4.25rem);
+    
+    li {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #001429;
+        padding-bottom: 2.5rem;
         
+        p {
+            font-size: 1.2rem;
+        }
+
         &:last-of-type {
-            margin-right: 0;
+            border: none;
+            padding-bottom: 0;
+        }
+    }
+`
+
+const FlexSelectors = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.9rem;
+    padding: 0 0.5rem;
+
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        button {
+            margin-right: 0.8rem;
+            
+            &:last-of-type {
+                margin-right: 0;
+            }
         }
     }
 `
@@ -68,9 +127,9 @@ const MoodSelector = styled.button<MoodSelectorProps>`
     display: flex;
     svg {
         transition: all 0.2s ease-in-out;
-        width: 2.5rem!important;
+        width: 2.8rem!important;
         height: 100%;
-        color: ${(MoodSelectorProps) => (MoodSelectorProps.moodColor === MoodSelectorProps.buttonColor && MoodSelectorProps.buttonColor !== undefined ? MoodSelectorProps.buttonColor : 'black')};
+        color: ${(MoodSelectorProps) => (MoodSelectorProps.moodColor === MoodSelectorProps.buttonColor && MoodSelectorProps.buttonColor !== undefined ? MoodSelectorProps.buttonColor : '#3799FB80')};
     }
     
     &:hover {
@@ -143,7 +202,7 @@ const StyledList = styled.ul<StyledListProps>`
                 left: -0.1875rem;
                 width: 1rem;
                 height: 1rem;
-                background: #1a77d5;
+                background: #3799FB;
             }
         }
         
@@ -202,21 +261,60 @@ const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }
 
     const catsList = categories !== null ? [...categories.childNodes] : undefined;
 
+    const subCatsList = active.childNodes !== undefined ? [...active.childNodes] : undefined;
+
+    const title = active.dataset === undefined || active.dataset.name === undefined ? '' : active.dataset.name.split(' - ');
 
     return (
         
         <StyledPopup isVisible={open}>
             <Container>
                 <StyledBox>
-                    <Title>{name}</Title>
-                                
-                    <Flex>
-                        <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
+                    <Title>{title[0]} - <span>{title[1]}</span></Title>
 
-                        <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
+                    <Parents>
+                        <li>
+                            <FontAwesomeIcon icon={faMale} /> 
+                            <p>Ouder 1</p>
+                        </li>
 
-                        <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
-                    </Flex>
+                        <li>
+                            <FontAwesomeIcon icon={faFemale} /> 
+                            <p>Ouder 2</p>
+                        </li>
+                    </Parents>
+
+                    <SubCats>
+                        {
+                            subCatsList === undefined ? '' :
+                            subCatsList.map(subCat => (
+                                <li>
+                                    <p>
+                                        {subCat.dataset.name.split(' - ')[2]}
+                                    </p>
+                                    <FlexSelectors>
+                                        <div>
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
+
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
+
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
+                                        </div>
+
+                                        <div>
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"green"}><FontAwesomeIcon id="green" icon={faSmile}/></MoodSelector>
+
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"orange"}><FontAwesomeIcon id="orange" icon={faMeh}/></MoodSelector>
+
+                                            <MoodSelector onClick={handleMood} buttonColor={buttons.id} moodColor={"red"}><FontAwesomeIcon id="red" icon={faFrown}/></MoodSelector>
+                                        </div>
+                                    </FlexSelectors>
+                                </li>
+                            ))
+                        }
+                    
+                    </SubCats>
+
                 </StyledBox>
                 
                 <StyledSideNav>
