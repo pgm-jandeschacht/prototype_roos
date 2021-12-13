@@ -35,7 +35,7 @@ const Rose: React.FC = () => {
     const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
         const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
-        (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
+        (cat === undefined || cat[2] === undefined ? setCategory(cat[1]) : setCategory(cat[2]));
         setDataId(data.id);
         setPopup(true);
     }
