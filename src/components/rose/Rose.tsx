@@ -31,6 +31,8 @@ interface StyledSvgProps {
 }
 
 const StyledSvg = styled.svg<StyledSvgProps>`
+    cursor: move;
+    /* touch-action: none; */
     transition: all 0.3s ease-in-out;
     position: absolute;
     margin: 1rem;
@@ -46,7 +48,7 @@ const StyledSvg = styled.svg<StyledSvgProps>`
     g {
         transition: all 0.2s ease-in-out;
         path {
-            cursor: pointer;
+            /* cursor: pointer; */
             transition: all 0.2s ease-in-out;
             &:hover {
                 fill: #1a77d5;
@@ -74,8 +76,6 @@ const Rose: React.FC = () => {
     const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
         setCategoryId(data.id);
-        // const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
-        // (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(data.id);
         
         if(data.nodeName !== 'svg') {
@@ -90,16 +90,54 @@ const Rose: React.FC = () => {
         }
     }
 
+    const rose = useRef(null);
+    
+    const [isPointerDown, setIsPointerDown] = useState(false)
+    const [pointerOrigin, setPointerOrigin] = useState({x: 0, y: 0});
+    const [viewBox, setViewBox] = useState({x: 0, y: 0, width: 125.83, height: 125.84});
+    const [newViewBox, setNewViewBox] = useState({x: 0, y: 0});
+    const [ratio, setRatio] = useState(0)
+    const [viewBoxString, setViewBoxString] = useState('')
+    var svg: any = rose.current;
+
     useEffect(() => {
         setCats(rose.current);
-    }, [])
+
+        if(svg !== null) {
+            setRatio(viewBox.width / svg.getBoundingClientRect().width);
+        }
+    }, [svg, viewBox.width])
     
-    const rose = useRef(null);
+
+    window.addEventListener('resize', function() {
+        if(svg !== null) {
+            setRatio(viewBox.width / svg.getBoundingClientRect().width);
+        }
+    });
+
+    const onDown = (e: React.MouseEvent) => {
+        setIsPointerDown(true);
+        setPointerOrigin({x: e.clientX, y: e.clientY});
+    }
+
+    const onMove = (e: React.MouseEvent) => {
+        if(isPointerDown) {
+            setNewViewBox({x: viewBox.x - ((e.clientX - pointerOrigin.x) * ratio), y: viewBox.y - ((e.clientY - pointerOrigin.y) * ratio)})
+
+            setViewBoxString(`${newViewBox.x} ${newViewBox.y} ${viewBox.width} ${viewBox.height}`)
+            svg.setAttribute('viewBox', viewBoxString)
+        }
+    }
+
+    const onUp = () => {
+        setIsPointerDown(false);
+        setViewBox({x: newViewBox.x, y: newViewBox.y, width: 125.83, height: 125.84});
+    }
 
     return (
         // <App>
             <StyledDiv>
-                <StyledSvg ref={rose} group={groupId} pathId={dataId} open={popup} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
+                <StyledSvg onPointerMove={onMove} onPointerDown={onDown} onPointerUp={onUp} ref={rose} group={groupId} pathId={dataId} open={popup} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 125.83 125.84">
                     <g id="Schijf_1_-_Kind" data-name="Schijf 1 - Kind">
                         <path id="Schijf_1_-_Kind_-_Cognitieve_functie" data-name="Schijf 1 - Kind - Cognitieve functie" className="cls-1"
                         d="M290.46,310.06l-8.2,14.21a30.74,30.74,0,0,1-15.36-26.63h16.38A14.32,14.32,0,0,0,290.46,310.06Z"
