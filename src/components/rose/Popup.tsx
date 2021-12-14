@@ -290,17 +290,11 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
         const data: any = e.target;
         const dataName = data.dataset.name;
         const catsArray = [...catsList]
-        // console.log(catsArray)
         catsArray.map(CA => {
             if(dataName === CA.id) {
                 setSubCatsList(CA.childNodes);
-                // console.log(CA)
             }
         })
-        // if(dataName === ) {
-
-        // }
-        // setSubCatsList(data)
         setActiveState(data.dataset.name);
         setTitle(data.innerText.split(' - '));
     }
@@ -310,7 +304,6 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
     const subCatsListArray = subCatsList !== undefined ? [...subCatsList] : undefined;
 
     return (
-        
         <StyledPopup isVisible={open}>
             <Container>
                 <StyledBox>
@@ -356,9 +349,7 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
                                 </li>
                             ))
                         }
-                    
                     </SubCats>
-
                 </StyledBox>
                 
                 <StyledSideNav>
@@ -374,7 +365,6 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
                             ))
                         }
                     </StyledList>
-
 
                     <Close onClick={handleClosing}>Afsluiten</Close>
                 </StyledSideNav>
