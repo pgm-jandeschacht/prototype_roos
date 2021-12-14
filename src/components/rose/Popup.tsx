@@ -5,7 +5,7 @@ import { faMeh, faSmile, faFrown } from '@fortawesome/free-regular-svg-icons'
 import { faMale, faFemale } from '@fortawesome/free-solid-svg-icons'
 
 interface PopupProps {
-    name: string,
+    category: string,
     open: boolean,
     onClose: (close: boolean) => void,
     categories: any,
@@ -75,16 +75,27 @@ const Parents = styled.ul`
     }
 `
 
-const SubCats = styled.ul`
+interface SubCatsProps {
+    selected: string
+}
+
+const SubCats = styled.ul<SubCatsProps>`
     overflow-y: auto;
     height: calc(100% - 4rem - 2rem - 4.25rem);
     
     li {
-        margin-bottom: 1rem;
+        padding: 1.5rem 0.5rem;
         border-bottom: 1px solid #001429;
-        padding-bottom: 2.5rem;
+        
+        &#${(SubCatsProps) => SubCatsProps.selected} {
+            p {
+                font-weight: bold;
+                font-size: 1.4rem;
+            }
+        }
         
         p {
+            transition: all 0.2s ease-in-out;
             font-size: 1.2rem;
         }
 
@@ -98,7 +109,7 @@ const SubCats = styled.ul`
 const FlexSelectors = styled.div`
     display: flex;
     justify-content: space-between;
-    margin-top: 0.9rem;
+    margin-top: 1rem;
     padding: 0 0.5rem;
 
     div {
@@ -127,7 +138,7 @@ const MoodSelector = styled.button<MoodSelectorProps>`
     display: flex;
     svg {
         transition: all 0.2s ease-in-out;
-        width: 2.8rem!important;
+        width: 2.5rem!important;
         height: 100%;
         color: ${(MoodSelectorProps) => (MoodSelectorProps.moodColor === MoodSelectorProps.buttonColor && MoodSelectorProps.buttonColor !== undefined ? MoodSelectorProps.buttonColor : '#3799FB80')};
     }
@@ -167,6 +178,7 @@ const StyledList = styled.ul<StyledListProps>`
             transition: all 0.2s ease-in-out;
             color: #777a7c;
             font-size: 1rem;
+            text-align: left;
 
             &:hover {
                 color: #001429;
@@ -247,7 +259,7 @@ const StyledBackground = styled.div`
     opacity: 95%;
 `
 
-const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }) => {
+const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, active }) => {
     const [close, setClose] = useState(true);
     const [buttons, setButtons] = useState({ 'id': '' });
     const [activeState, setActiveState] = useState('');
@@ -303,11 +315,11 @@ const Popup: React.FC<PopupProps> = ({ name, open, onClose, categories, active }
                         </li>
                     </Parents>
 
-                    <SubCats>
+                    <SubCats selected={category}>
                         {
                             subCatsList === undefined ? '' :
                             subCatsList.map((subCat: any, index: number) => (
-                                <li key={index}>
+                                <li key={index} id={subCat.id}>
                                     <p>
                                         {subCat.dataset.name.split(' - ')[2]}
                                     </p>

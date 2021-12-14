@@ -50,7 +50,7 @@ const StyledSvg = styled.svg<StyledSvgProps>`
 `
 
 const Rose: React.FC = () => {
-    const [category, setCategory] = useState('');
+    const [categoryId, setCategoryId] = useState('');
     const [dataId, setDataId] = useState('');
     const [popup, setPopup] = useState(false);
     const [cats, setCats] = useState(null);
@@ -58,13 +58,16 @@ const Rose: React.FC = () => {
 
     const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
-        const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
-        (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
+        setCategoryId(data.id);
+        // const cat = (data?.dataset.name === undefined ? undefined : data?.dataset.name.split(' - '));
+        // (cat === undefined || cat[2] === undefined ? setCategory('Fault in svg') : setCategory(cat[2]));
         setDataId(data.id);
         
-        setGroupId(data.parentNode);
-
-        setPopup(true);
+        
+        if(data.nodeName !== 'svg') {
+            setGroupId(data.parentNode);
+            setPopup(true);
+        }
     }
     
     const handleClosing = (close: boolean) => {
@@ -138,9 +141,7 @@ const Rose: React.FC = () => {
                 </g>
             </StyledSvg>
 
-            {/* <p>{category}</p> */}
-
-            <Popup name={category} open={popup} onClose={handleClosing} categories={cats} active={groupId}/>
+            <Popup category={categoryId} open={popup} onClose={handleClosing} categories={cats} active={groupId}/>
         </StyledDiv>
     )
 }
