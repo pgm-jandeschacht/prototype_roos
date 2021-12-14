@@ -264,7 +264,8 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
     const [buttons, setButtons] = useState({ 'id': '' });
     const [activeState, setActiveState] = useState('');
     const [title, setTitle] = useState('');
-    // const [subCatsList, setSubCatsList] = useState(null);
+    const [subCatsList, setSubCatsList] = useState(new Array(active === '' ? 0 : active.childNodes.length).fill(null));
+    const [catsList, setCatsList] = useState(new Array(categories === null ? 0 : categories.childNodes.length).fill(null));
 
     const handleClosing = () => {
         setClose(false);
@@ -276,8 +277,9 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
         setClose(true);
         setActiveState(active.id)
         setTitle(active.dataset === undefined || active.dataset.name === undefined ? '' : active.dataset.name.split(' - '));
-        // setSubCatsList(active.childNodes !== undefined ? [...active.childNodes] : undefined);
-    }, [onClose, close, active.dataset, active.id, active.childNodes]);
+        setSubCatsList(active.childNodes !== undefined ? active.childNodes : undefined);
+        setCatsList(categories !== null ? categories.childNodes : undefined);
+    }, [onClose, close, active.dataset, active.id, active.childNodes, categories]);
     
     const handleMood = (e: React.MouseEvent<HTMLButtonElement>) => {
         const event: any = e.target;
@@ -286,15 +288,26 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
 
     const handleClicking = (e: React.MouseEvent<HTMLButtonElement>) => {
         const data: any = e.target;
-        console.log(data);
-        console.log(subCatsList)
+        const dataName = data.dataset.name;
+        const catsArray = [...catsList]
+        // console.log(catsArray)
+        catsArray.map(CA => {
+            if(dataName === CA.id) {
+                setSubCatsList(CA.childNodes);
+                // console.log(CA)
+            }
+        })
+        // if(dataName === ) {
+
+        // }
+        // setSubCatsList(data)
         setActiveState(data.dataset.name);
         setTitle(data.innerText.split(' - '));
     }
 
-    const catsList = categories !== null ? [...categories.childNodes] : undefined;
-
-    const subCatsList = active.childNodes !== undefined ? [...active.childNodes] : undefined;
+    const catsListArray = catsList !== undefined ? [...catsList] : undefined;
+    
+    const subCatsListArray = subCatsList !== undefined ? [...subCatsList] : undefined;
 
     return (
         
@@ -317,8 +330,8 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
 
                     <SubCats selected={category}>
                         {
-                            subCatsList === undefined ? '' :
-                            subCatsList.map((subCat: any, index: number) => (
+                            subCatsListArray === undefined ? '' :
+                            subCatsListArray.map((subCat: any, index: number) => (
                                 <li key={index} id={subCat.id}>
                                     <p>
                                         {subCat.dataset.name.split(' - ')[2]}
@@ -351,8 +364,8 @@ const Popup: React.FC<PopupProps> = ({ category, open, onClose, categories, acti
                 <StyledSideNav>
                     <StyledList groupId={activeState}>
                         {
-                            catsList === undefined ? '' :
-                            catsList.map((cat: any, index: number) => (
+                            catsListArray === undefined ? '' :
+                            catsListArray.map((cat: any, index: number) => (
                                 <li id={cat.id} key={index}>
                                     <button data-name={cat.id} onClick={handleClicking}>
                                         {cat.dataset.name}
