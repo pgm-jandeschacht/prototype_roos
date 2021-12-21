@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Rose } from '../components/rose'
 import { BaseLayout } from '../layout'
 
@@ -7,7 +7,6 @@ const Home: React.FC = () => {
         <BaseLayout>
             <Rose/>
 
-            {/* <p>text</p>
             <p>text</p>
             <p>text</p>
             <p>text</p>
@@ -33,7 +32,8 @@ const Home: React.FC = () => {
             <p>text</p>
             <p>text</p>
             <p>text</p>
-            <p>text</p> */}
+            <p>text</p>
+            <p>text</p>
         </BaseLayout>
     )
 }

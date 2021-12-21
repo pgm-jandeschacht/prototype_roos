@@ -2,14 +2,20 @@ import React, { useState, useRef, useEffect, SyntheticEvent } from 'react'
 import Popup from './Popup'
 import styled from 'styled-components'
 
-const StyledDiv = styled.div`
-    position: relative;
+interface StyledDivProps {
+    sticked: boolean
+}
+
+const StyledDiv = styled.div<StyledDivProps>`
+    position: ${(StyledDivProps) => StyledDivProps.sticked ? 'fixed' : 'relative'};
+    top: 0;
+    left: 0;
     max-width: 80rem;
     margin: auto;
     overflow-y: hidden;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
-    /* background: red; */
+    background: white;
     /* -ms-overflow-style: none;
     scrollbar-width: none; */
 `
@@ -32,7 +38,7 @@ interface StyledSvgProps {
 }
 
 const StyledSvg = styled.svg<StyledSvgProps>`
-    background: yellow;
+    /* background: yellow; */
     cursor: move;
     touch-action: none;
     transition: all 0.3s ease-in-out;
@@ -76,48 +82,51 @@ const Rose: React.FC = () => {
     const [width, setWidth] = useState(0)
     const [pointerOrigin, setPointerOrigin] = useState({x: 0, y: 0});
     const [viewBox, setViewBox] = useState({x: 0, y: 0, width: 125.83, height: 125.84});
-    
-    const handleClicking = (e: React.MouseEvent<SVGElement>) => {
-        const data: any = e.target;
-        setCategoryId(data.id);
-        setDataId(data.id);
-        
-        if(data.nodeName !== 'svg' && pointerOrigin.x === e.clientX) {
-            setGroupId(data.parentNode);
-            setPopup(true);
-        }
-    }
-    
-    const handleClosing = (close: boolean) => {
-        if (!close) {
-            setPopup(false)
-        }
-    }
-    
-    const rose = useRef(null);
-    
+    const [sticky, setSticky] = useState(true)
     const [isPointerDown, setIsPointerDown] = useState(false)
     const [newViewBox, setNewViewBox] = useState({x: 0, y: 0});
     const [ratio, setRatio] = useState(0)
     const [viewBoxString, setViewBoxString] = useState('0 0 125.83 125.84')
     const [scale, setScale] = useState(1)
     const [loaded, setLoaded] = useState(false)
+
+    const handleClicking = (e: React.MouseEvent<SVGElement>) => {
+        const data: any = e.target;
+        setCategoryId(data.id);
+        setDataId(data.id);
+        
+        // open popup if node !== svg and svg !== panned
+        if(data.nodeName !== 'svg' && pointerOrigin.x === e.clientX) {
+            setGroupId(data.parentNode);
+            setPopup(true);
+        }
+    }
+    
+    // close popup
+    const handleClosing = (close: boolean) => {
+        if (!close) setPopup(false)
+    }
+    
+    // set ref svg
+    const rose = useRef(null);
     var svg: any = rose.current;
     
     useEffect(() => {
         setCats(rose.current);
         
-        if(svg !== null && loaded === false) {
+        // set start viewbox size
+        if(svg !== null && !loaded) {
             setLoaded(true);
             svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
-        } else if (svg !== null && loaded === true) {
+        } else if (svg !== null && loaded) {
             setRatio(viewBox.width / svg.getBoundingClientRect().width);
         }
 
-        setWidth(document.body.clientWidth);        
+        setWidth(document.body.clientWidth);
     }, [svg, viewBox.width, loaded])
     
     
+    // When resizing the window, the width changed of viewbox
     window.addEventListener('resize', function() {
         setWidth(document.body.clientWidth)
 
@@ -127,11 +136,13 @@ const Rose: React.FC = () => {
         
     });
 
+    // When clicked to drag
     const onDown = (e: React.MouseEvent) => {
         setIsPointerDown(true);
         setPointerOrigin({x: e.clientX, y: e.clientY});
     }
     
+    // When draging
     const onMove = (e: React.MouseEvent) => {
         if(isPointerDown) {
             setNewViewBox({x: viewBox.x - ((e.clientX - pointerOrigin.x) * ratio), y: viewBox.y - ((e.clientY - pointerOrigin.y) * ratio)})
@@ -140,18 +151,29 @@ const Rose: React.FC = () => {
             svg.setAttribute('viewBox', viewBoxString)
         }
     }
-
+    
+    // When releasing the drag
     const onUp = () => {
         setIsPointerDown(false);
         setViewBox({x: newViewBox.x, y: newViewBox.y, width: 125.83, height: 125.84});
     }
 
+    // When scrolling with mousewheel
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
-        const ZOOM_SPEED = -0.005;
-        setScale(Math.min(Math.max(.25, scale + (e.deltaY * ZOOM_SPEED)), 2.25))
+        if(!popup) {
+            const ZOOM_SPEED = -0.005;
+            setScale(Math.min(Math.max(.25, scale + (e.deltaY * ZOOM_SPEED)), 2.25))
+    
+            if((scale + (e.deltaY * ZOOM_SPEED)) <= 0.25 || scale + (e.deltaY * ZOOM_SPEED) >= 2.25) {
+                setSticky(false)
+            } else {
+                setSticky(true)
+            }
+        }
         // svg.setAttribute('viewBox', '-62.5 -62.5 125.83 125.84')
     }
 
+    // Reset button
     const handleReset = () => {
         setScale(1)
         setViewBox({x: 0, y: 0, width: 125.83, height: 125.84})
@@ -162,7 +184,7 @@ const Rose: React.FC = () => {
     }
 
     return (
-        <StyledDiv onWheel={handleScroll} >
+        <StyledDiv sticked={sticky} onWheel={handleScroll} >
             <StyledSvg isVisible={loaded} scaling={scale} noSB={width} onPointerMove={onMove} onPointerDown={onDown} onPointerUp={onUp} ref={rose} group={groupId} pathId={dataId} open={popup} onClick={handleClicking} xmlns="http://www.w3.org/2000/svg">
                 <g id="Schijf_1_-_Kind" data-name="Schijf 1 - Kind">
                     <path id="Schijf_1_-_Kind_-_Cognitieve_functie" data-name="Schijf 1 - Kind - Cognitieve functie" className="cls-1"

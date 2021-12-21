@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface BaseLayoutProps {
-    children: React.ReactNode
+    children: React.ReactNode,
 }
 
 const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
