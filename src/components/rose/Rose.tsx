@@ -14,6 +14,14 @@ const StyledDiv = styled.div`
     scrollbar-width: none; */
 `
 
+const StyledButton = styled.button`
+    position: absolute;
+    background: red;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: bold;
+`
+
 interface StyledSvgProps {
     pathId: string,
     open: boolean,
@@ -66,13 +74,15 @@ const Rose: React.FC = () => {
     const [cats, setCats] = useState(null);
     const [groupId, setGroupId] = useState('');
     const [width, setWidth] = useState(0)
+    const [pointerOrigin, setPointerOrigin] = useState({x: 0, y: 0});
+    const [viewBox, setViewBox] = useState({x: 0, y: 0, width: 125.83, height: 125.84});
     
     const handleClicking = (e: React.MouseEvent<SVGElement>) => {
         const data: any = e.target;
         setCategoryId(data.id);
         setDataId(data.id);
         
-        if(data.nodeName !== 'svg') {
+        if(data.nodeName !== 'svg' && pointerOrigin.x === e.clientX) {
             setGroupId(data.parentNode);
             setPopup(true);
         }
@@ -87,8 +97,6 @@ const Rose: React.FC = () => {
     const rose = useRef(null);
     
     const [isPointerDown, setIsPointerDown] = useState(false)
-    const [pointerOrigin, setPointerOrigin] = useState({x: 0, y: 0});
-    const [viewBox, setViewBox] = useState({x: 0, y: 0, width: 125.83, height: 125.84});
     const [newViewBox, setNewViewBox] = useState({x: 0, y: 0});
     const [ratio, setRatio] = useState(0)
     const [viewBoxString, setViewBoxString] = useState('0 0 125.83 125.84')
@@ -122,12 +130,10 @@ const Rose: React.FC = () => {
     const onDown = (e: React.MouseEvent) => {
         setIsPointerDown(true);
         setPointerOrigin({x: e.clientX, y: e.clientY});
-        console.log(viewBox.width)
     }
     
     const onMove = (e: React.MouseEvent) => {
         if(isPointerDown) {
-            console.log(ratio)
             setNewViewBox({x: viewBox.x - ((e.clientX - pointerOrigin.x) * ratio), y: viewBox.y - ((e.clientY - pointerOrigin.y) * ratio)})
 
             setViewBoxString(`${newViewBox.x} ${newViewBox.y} ${viewBox.width} ${viewBox.height}`)
@@ -143,6 +149,16 @@ const Rose: React.FC = () => {
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         const ZOOM_SPEED = -0.005;
         setScale(Math.min(Math.max(.25, scale + (e.deltaY * ZOOM_SPEED)), 2.25))
+        // svg.setAttribute('viewBox', '-62.5 -62.5 125.83 125.84')
+    }
+
+    const handleReset = () => {
+        setScale(1)
+        setViewBox({x: 0, y: 0, width: 125.83, height: 125.84})
+        setPointerOrigin({x: 0, y: 0})
+        setNewViewBox({x: 0, y: 0})
+        setViewBoxString('0 0 125.83 125.84')
+        svg.setAttribute('viewBox', '0 0 125.83 125.84')
     }
 
     return (
@@ -203,6 +219,8 @@ const Rose: React.FC = () => {
                     transform="translate(-234.72 -234.72)" />
                 </g>
             </StyledSvg>
+
+            <StyledButton onClick={handleReset}>Reset</StyledButton>
 
             <Popup category={categoryId} open={popup} onClose={handleClosing} categories={cats} active={groupId}/>
         </StyledDiv>
