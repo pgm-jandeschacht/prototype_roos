@@ -10,7 +10,7 @@ const StyledDiv = styled.div<StyledDivProps>`
     position: ${(StyledDivProps) => StyledDivProps.sticked ? 'fixed' : 'relative'};
     top: 0;
     left: 0;
-    max-width: 80rem;
+    /* max-width: 80rem; */
     margin: auto;
     overflow-y: hidden;
     width: 100%;
@@ -38,7 +38,6 @@ interface StyledSvgProps {
 }
 
 const StyledSvg = styled.svg<StyledSvgProps>`
-    /* background: yellow; */
     cursor: move;
     touch-action: none;
     transition: all 0.3s ease-in-out;
@@ -48,7 +47,7 @@ const StyledSvg = styled.svg<StyledSvgProps>`
     stroke-miterlimit: 10;
     stroke-width: 0.5px;
     width: 100%;
-    max-width: 80rem;
+    /* max-width: 80rem; */
     margin: auto;
     display: ${(StyledDivProps) => StyledDivProps.isVisible ? 'block' : 'none'};
     
