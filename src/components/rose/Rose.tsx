@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, SyntheticEvent } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Popup from './Popup'
 import styled from 'styled-components'
 
@@ -42,11 +42,13 @@ const StyledSvg = styled.svg<StyledSvgProps>`
     touch-action: none;
     transition: all 0.3s ease-in-out;
     position: absolute;
+    /* top: -50%; */
     fill: #fff;
     stroke: #000;
     stroke-miterlimit: 10;
     stroke-width: 0.5px;
     width: 100%;
+    height: 100%;
     /* max-width: 80rem; */
     margin: auto;
     display: ${(StyledDivProps) => StyledDivProps.isVisible ? 'block' : 'none'};
@@ -67,7 +69,6 @@ const StyledSvg = styled.svg<StyledSvgProps>`
         
         &#${(StyledSvgProps) => StyledSvgProps.group.id} {
             fill: #3799FB80
-
         }
     }
 `
@@ -146,7 +147,16 @@ const Rose: React.FC = () => {
         if(isPointerDown) {
             setNewViewBox({x: viewBox.x - ((e.clientX - pointerOrigin.x) * ratio), y: viewBox.y - ((e.clientY - pointerOrigin.y) * ratio)})
 
-            setViewBoxString(`${newViewBox.x} ${newViewBox.y} ${viewBox.width} ${viewBox.height}`)
+            let dragSpeed = 2;
+            if (svg.getBoundingClientRect().width < 1000) {
+                dragSpeed = 1
+            } else if (svg.getBoundingClientRect().width > 1000 && (svg.getBoundingClientRect().width > 2000))  {
+                dragSpeed = 1.5;
+            } else {
+                dragSpeed = 2;
+            }
+
+            setViewBoxString(`${(newViewBox.x) * dragSpeed} ${(newViewBox.y) * dragSpeed} ${viewBox.width} ${viewBox.height}`)
             svg.setAttribute('viewBox', viewBoxString)
         }
     }
@@ -159,6 +169,9 @@ const Rose: React.FC = () => {
 
     // When scrolling with mousewheel
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
+
+        console.log(svg)
+
         if(!popup) {
             const ZOOM_SPEED = -0.005;
             setScale(Math.min(Math.max(.25, scale + (e.deltaY * ZOOM_SPEED)), 2.25))
@@ -169,7 +182,6 @@ const Rose: React.FC = () => {
                 setSticky(true)
             }
         }
-        // svg.setAttribute('viewBox', '-62.5 -62.5 125.83 125.84')
     }
 
     // Reset button
